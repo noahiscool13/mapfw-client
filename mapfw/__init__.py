@@ -1,0 +1,1 @@
+from mapfw.mapfwbenchmarker import MapfwBenchmarker
