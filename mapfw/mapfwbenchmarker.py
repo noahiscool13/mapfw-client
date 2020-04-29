@@ -4,7 +4,7 @@ import requests
 
 
 class MapfwBenchmarker:
-    def __init__(self, token: str, problem_id: int, algorithm: str, version: str):
+    def __init__(self, token: str, problem_id: int, algorithm: str, version: str, debug=True):
         """
         Helper function to handle API requests
 
@@ -20,6 +20,7 @@ class MapfwBenchmarker:
         self.problems = None
         self.status = {"state": "UNINITIALIZED", "data": None}
         self.attempt_id = None
+        self.debug = debug
 
         self.load()
 
@@ -69,7 +70,8 @@ class MapfwBenchmarker:
 
         data = {
             "algorithm": self.algorithm,
-            "version": self.version
+            "version": self.version,
+            "debug" : self.debug
         }
 
         r = requests.post(f"https://mapfw.nl/api/benchmarks/{self.problem_id}/problems", headers=headers, json=data)
