@@ -12,6 +12,7 @@ class MapfwBenchmarker:
         :param problem_id: Id of the problem to solve
         :param algorithm: Name of your algorithm
         :param version: Version of your algorithm
+        :param debug: Set to False to get your solution in the global rankings
         """
         self.token = token
         self.algorithm = algorithm
