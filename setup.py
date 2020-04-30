@@ -16,6 +16,7 @@ setup(name='mapfw',
       license='MIT',
       packages=['mapfw'],
       long_description=read('README.md'),
+      long_description_content_type='text/markdown',
       zip_safe=False,
       install_requires=[
           'requests'
