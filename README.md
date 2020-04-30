@@ -8,6 +8,7 @@ With MAPFW problems, you are given:
 -	A list of agent starting positions
 -	A list of agent goal positions
 -	A list of agent waypoints
+
 The solution for that problem is a list of paths, one for each agent st.
 -	Each path starts on the starting position of the corresponding agent
 -	Each path ends on the goal position of the corresponding agent
