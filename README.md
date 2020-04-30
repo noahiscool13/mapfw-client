@@ -2,7 +2,7 @@
 
 This is a client library for the https://mapfw.nl/ MAPFW problems
 ## The MAPFW problem
-MAPFW is an abbreviation of  “Multi-agent pathfinding (with) waypoints”.
+MAPFW is an abbreviation of  "Multi-agent pathfinding (with) waypoints".
 With MAPFW problems, you are given:
 -	A grid/maze
 -	A list of agent starting positions
@@ -35,7 +35,7 @@ for problem in benchmarker:
 The only things that you need to do are to fill in your own API Token, and the number of the benchmark that you want to solve. The name of your algorithm, and its version. And the debug mode. This should be set to True while you are developing your algorithm. This means that your attempts will not be shown on the global leader boards. You can however still see your own solution at https://mapfw.nl/auth/latest-debug.
 
 When your are ready, set the debug mode to False. The next time you run your code, your attempt will be publicly listed.
-You should also implement the “solve” function yourself.
+You should also implement the "solve" function yourself.
 This function should take in a problem and return the solution.
 A basic outline of this function can be as follows:
 ```
