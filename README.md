@@ -28,9 +28,11 @@ Now go to your account page at https://mapfw.nl/auth/account. To find your API T
 This is all the info you need to start coding. The basic outline of your code should look like this:
 ```
 from mapfw import MapfwBenchmarker
-benchmarker = MapfwBenchmarker("<YOUR API TOKEN>",<BENCHMARK INDEX>,"<YOUR ALGORITHMS NAME>","<YOUR ALGORITHMS VERSION>",<DEBUG_MODE>)
+
+benchmarker = MapfwBenchmarker("<YOUR API TOKEN>", <BENCHMARK INDEX>, "<YOUR ALGORITHMS NAME>",
+                               "<YOUR ALGORITHMS VERSION>", <DEBUG_MODE>)
 for problem in benchmarker:
-	problem.add_solution(solve(problem))
+    problem.add_solution(solve(problem))
 ```
 The only things that you need to do are to fill in your own API Token, and the number of the benchmark that you want to solve. The name of your algorithm, and its version. And the debug mode. This should be set to True while you are developing your algorithm. This means that your attempts will not be shown on the global leader boards. You can however still see your own solution at https://mapfw.nl/auth/latest-debug.
 
@@ -40,28 +42,30 @@ This function should take in a problem and return the solution.
 A basic outline of this function can be as follows:
 ```
 class Agent:
-    def __init__(self,start,goal,waypoints):
+    def __init__(self, start, goal, waypoints):
         self.start = start
         self.goal = goal
         self.waypoints = waypoints
 
+
 class Maze:
-    def __init__(self,grid,width,height):
+    def __init__(self, grid, width, height):
         self.grid = grid
         self.width = width
         self.height = height
+
 
 def solve(problem):
     number_of_agents = len(problem.starts)
     agents = []
     for i in range(number_of_agents):
-        agents.append(Agent(problem.starts[i], problem.starts[i],problem.goals[i], problem.waypoints[i]))
-    maze = Maze(problem.grid,problem.width,problem.height)
+        agents.append(Agent(problem.starts[i], problem.starts[i], problem.goals[i], problem.waypoints[i]))
+    maze = Maze(problem.grid, problem.width, problem.height)
 
     paths = []
     for agent in agents:
-        paths.append(find_path(agent,maze))
-    
+        paths.append(find_path(agent, maze))
+
     """
     Now paths looks like:
     
@@ -69,7 +73,7 @@ def solve(problem):
     path agent 1 = [pos agent 1 at time 0, pos agent 1 at time 1, .., pos agent 1 at finishing time]
     pos = [x coordinate, y coordinate]
     """
-    
+
     return paths
 ```
 This should be all that you need to know to get started!
