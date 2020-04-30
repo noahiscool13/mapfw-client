@@ -19,15 +19,15 @@ The solution for that problem is a list of paths, one for each agent st.
 This solution is optimal if there is no other solution st. the sum of the lengths of the paths of all the agents is smaller than the this solution.
 ## Using the client library
 Install the library with:
-```
-Pip install mapfw
+```bash
+pip install mapfw
 ```
 Then go to https://mapfw.nl/benchmarks/. Here you can find a list of benchmarks. If you click on a benchmark you can see prefiously posted solutions. By clicking on a solution, You can see what the problem looks like. Find a problem that you like, and find its index on the https://mapfw.nl/benchmarks/ page (Sorry, you will have to count yourself, starting from 1. This will change later).
 
 Now go to your account page at https://mapfw.nl/auth/account. To find your API Token
 
 This is all the info you need to start coding. The basic outline of your code should look like this:
-```
+```python
 from mapfw import MapfwBenchmarker
 
 benchmarker = MapfwBenchmarker("<YOUR API TOKEN>", <BENCHMARK INDEX>, "<YOUR ALGORITHMS NAME>",
@@ -41,7 +41,7 @@ When your are ready, set the debug mode to False. The next time you run your cod
 You should also implement the "solve" function yourself.
 This function should take in a problem and return the solution.
 A basic outline of this function can be as follows:
-```
+```python
 class Agent:
     def __init__(self, start, goal, waypoints):
         self.start = start
