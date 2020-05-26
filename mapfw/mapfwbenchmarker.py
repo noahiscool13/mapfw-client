@@ -1,10 +1,12 @@
+from typing import Union
+
 from mapfw.problem import Problem
 from time import time
 import requests
 
 
 class MapfwBenchmarker:
-    def __init__(self, token: str, problem_id: int, algorithm: str, version: str, debug=True):
+    def __init__(self, token: str, problem_id: Union[int, iter], algorithm: str, version: str, debug=True):
         """
         Helper function to handle API requests
 
@@ -17,18 +19,20 @@ class MapfwBenchmarker:
         self.token = token
         self.algorithm = algorithm
         self.version = version
-        self.problem_id = problem_id
+        self.benchmarks = [problem_id] if isinstance(problem_id, int) else problem_id
         self.problems = None
         self.status = {"state": "UNINITIALIZED", "data": None}
         self.attempt_id = None
         self.debug = debug
 
-        self.load()
-
     def __iter__(self):
-        for problem in self.problems:
-            problem.start_time = time()
-            yield problem
+        for problem_id in self.benchmarks:
+            self.status = {"state": "UNINITIALIZED", "data": None}
+            self.problem_id = problem_id
+            self.load()
+            for problem in self.problems:
+                problem.start_time = time()
+                yield problem
 
     def submit(self):
         """"
@@ -72,7 +76,7 @@ class MapfwBenchmarker:
         data = {
             "algorithm": self.algorithm,
             "version": self.version,
-            "debug" : self.debug
+            "debug": self.debug
         }
 
         r = requests.post(f"https://mapfw.nl/api/benchmarks/{self.problem_id}/problems", headers=headers, json=data)
@@ -83,3 +87,12 @@ class MapfwBenchmarker:
         self.attempt_id = r.json()["attempt"]
 
         self.status = {"state": "RUNNING", "data": {"problem_states": [0 for _ in self.problems]}}
+
+
+def get_all_benchmarks(without: Union[int, iter] = None):
+    if not without:
+        without = []
+    without = [without] if isinstance(without, int) else without
+
+    r = requests.get("https://mapfw.nl/benchmarks/list.json")
+    return [problem for problem in r.json() if problem not in without]

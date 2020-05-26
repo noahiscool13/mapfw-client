@@ -1,1 +1,1 @@
-from mapfw.mapfwbenchmarker import MapfwBenchmarker
+from mapfw.mapfwbenchmarker import MapfwBenchmarker, get_all_benchmarks
