@@ -1,6 +1,10 @@
 import warnings
+from pathos.multiprocessing import ProcessPool as Pool
 from typing import Union, Callable, List
 
+from tqdm import tqdm
+
+from mapfw.functime import time_fun
 from mapfw.problem import Problem
 from time import time
 import requests
@@ -9,7 +13,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 
 class MapfwBenchmarker:
     def __init__(self, token: str, problem_id: Union[int, iter], algorithm: str, version: str, debug=True,
-                 solver: Callable[[Problem], List] = None):
+                 solver: Callable[[Problem], List] = None, cores=1):
         """
         Helper function to handle API requests
 
@@ -30,6 +34,7 @@ class MapfwBenchmarker:
         self.attempt_id = None
         self.timeout = None
         self.debug = debug
+        self.cores = cores
 
     def __iter__(self):
         warnings.warn("Consult the README for the new way of running benchmarks", DeprecationWarning, stacklevel=2)
@@ -62,18 +67,31 @@ class MapfwBenchmarker:
             self.load()
 
             while self.status["state"] == "RUNNING":
-                for problem in self.problems:
-                    if self.timeout:
-                        problem.start_time = time()
+                if self.timeout:
+                    def solve_func(problem):
                         try:
-                            solution = func_timeout(self.timeout / 1000, self.solver, args=(problem,))
+                            sol = func_timeout(self.timeout / 1000, self.solver, args=(problem,))
                         except FunctionTimedOut:
-                            solution = None
-                        problem.add_solution(solution)
-                    else:
-                        problem.start_time = time()
-                        solution = self.solver(problem)
-                        problem.add_solution(solution)
+                            sol = None
+                        except Exception as e:
+                            print(f"ERROR: {e}")
+                        return sol
+                else:
+                    def solve_func(problem):
+                        return self.solver(problem)
+                time_func = lambda problem: time_fun(problem, solve_func)
+
+                if self.cores == -1:
+                    with Pool() as p:
+                        solutions = list(tqdm(p.imap(time_func, self.problems), total=len(self.problems)))
+                else:
+                    with Pool(self.cores) as p:
+                        solutions = list(tqdm(p.imap(time_func, self.problems), total=len(self.problems)))
+
+                for p in range(len(self.problems)):
+                    self.problems[p].add_solution(*solutions[p])
+
+
 
     def submit(self):
         """"

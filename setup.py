@@ -8,7 +8,7 @@ def read(fname):
 
 
 setup(name='mapfw',
-      version='0.3.2',
+      version='0.4.5',
       description='API client for mapfw challenges',
       url='https://github.com/noahiscool13/mapfw-client',
       author='Noah Jadoenathmisier',
@@ -20,6 +20,8 @@ setup(name='mapfw',
       zip_safe=False,
       install_requires=[
           'requests',
-          'func_timeout'
+          'func_timeout',
+          'tqdm',
+          'pathos'
       ],
       )

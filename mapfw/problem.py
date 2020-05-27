@@ -34,7 +34,7 @@ class Problem:
         out += "\n>"
         return out
 
-    def add_solution(self, paths):
+    def add_solution(self, paths,runtime=None):
         """
         Add the solution to the problem
 
@@ -50,8 +50,12 @@ class Problem:
             "Problem seems to be already solved")
 
         self.paths = paths
-        self.time = time() - self.start_time
+        if runtime:
+            self.time = runtime
+        else:
+            self.time = time() - self.start_time
         self.benchmark.status["data"]["problem_states"][self.batch_pos] = 1
+
 
         if all(self.benchmark.status["data"]["problem_states"]):
             self.status = {"state": "SUBMITTING", "data": None}
