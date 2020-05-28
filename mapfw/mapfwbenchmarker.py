@@ -13,7 +13,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 
 class MapfwBenchmarker:
     def __init__(self, token: str, problem_id: Union[int, iter], algorithm: str, version: str, debug=True,
-                 solver: Callable[[Problem], List] = None, cores=1):
+                 solver: Callable[[Problem], List] = None, cores=1, timeout = None):
         """
         Helper function to handle API requests
 
@@ -35,6 +35,7 @@ class MapfwBenchmarker:
         self.timeout = None
         self.debug = debug
         self.cores = cores
+        self.user_timeout = timeout
 
     def __iter__(self):
         warnings.warn("Consult the README for the new way of running benchmarks", DeprecationWarning, stacklevel=2)
@@ -163,9 +164,25 @@ class MapfwBenchmarker:
         self.attempt_id = r.json()["attempt"]
 
         if "timeout" in r.json():
-            self.timeout = r.json()["timeout"]
+            timeout = r.json()["timeout"]
+            if self.user_timeout:
+                if self.user_timeout<timeout:
+                    warnings.warn(f"The benchmark recommended timeout is {timeout}ms,"
+                                  f" your timeout is {self.user_timeout}ms."
+                                  f" Consider increasing or removing your custom timeout.")
+                if self.user_timeout>timeout:
+                    warnings.warn(f"The benchmark recommended timeout is {timeout}ms,"
+                                  f" your timeout is {self.user_timeout}ms."
+                                  f" your timeout will be overwritten by the benchmark recommended timeout.")
+                self.timeout = min(self.user_timeout,timeout)
+            else:
+                self.timeout = timeout
+
         else:
-            self.timeout = 0
+            if self.user_timeout:
+                self.timeout = self.user_timeout
+            else:
+                self.timeout = 0
 
         self.status = {"state": "RUNNING", "data": {"problem_states": [0 for _ in self.problems]}}
 

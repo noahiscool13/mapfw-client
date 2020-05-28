@@ -29,10 +29,10 @@ Now go to your account page at https://mapfw.nl/auth/account. To find your API T
 This is all the info you need to start coding. The basic outline of your code should look like this:
 ```python
 from mapfw import MapfwBenchmarker
-
-benchmarker = MapfwBenchmarker("<YOUR API TOKEN>", <BENCHMARK INDEX>, "<YOUR ALGORITHMS NAME>",
-                               "<YOUR ALGORITHMS VERSION>", <DEBUG_MODE>, solver=<SOLVER>,cores=<CORES>)
-benchmarker.run()
+if __name__ == '__main__':
+    benchmarker = MapfwBenchmarker("<YOUR API TOKEN>", <BENCHMARK INDEX>, "<YOUR ALGORITHMS NAME>",
+                                   "<YOUR ALGORITHMS VERSION>", <DEBUG_MODE>, solver=<SOLVER>,cores=<CORES>)
+    benchmarker.run()
 ```
 The only things that you need to do are to fill in
 - Your own API Token
