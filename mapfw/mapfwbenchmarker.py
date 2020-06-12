@@ -84,7 +84,9 @@ class MapfwBenchmarker:
                         return self.solver(problem)
                 time_func = lambda problem: time_fun(problem, solve_func)
 
-                if self.cores == -1:
+                if self.cores == 1:
+                    solutions = list(tqdm(map(time_func, self.problems), total=len(self.problems)))
+                elif self.cores == -1:
                     with Pool() as p:
                         solutions = list(tqdm(p.imap(time_func, self.problems), total=len(self.problems)))
                 else:
