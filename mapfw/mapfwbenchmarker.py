@@ -13,7 +13,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 
 class MapfwBenchmarker:
     def __init__(self, token: str, problem_id: Union[int, iter], algorithm: str, version: str, debug=True,
-                 solver: Callable[[Problem], List] = None, cores=1, timeout = None):
+                 solver: Callable[[Problem], List] = None, cores=1, timeout = None, baseURL="https://mapfw.nl/"):
         """
         Helper function to handle API requests
 
@@ -36,6 +36,7 @@ class MapfwBenchmarker:
         self.debug = debug
         self.cores = cores
         self.user_timeout = timeout
+        self.baseURL = baseURL
 
     def __iter__(self):
         warnings.warn("Consult the README for the new way of running benchmarks", DeprecationWarning, stacklevel=2)
@@ -76,6 +77,7 @@ class MapfwBenchmarker:
                             sol = None
                         except Exception as e:
                             print(f"ERROR: {e}")
+                            return
                         return sol
                 else:
                     def solve_func(problem):
@@ -115,8 +117,8 @@ class MapfwBenchmarker:
             ]
         }
 
-        r = requests.post(f"https://mapfw.nl/api/attempts/{self.attempt_id}/solutions", headers=headers, json=data)
-        # r = requests.post(f"http://127.0.0.1:5000/api/attempts/{self.attempt_id}/solutions", headers=headers, json=data)
+        # r = requests.post(f"https://mapfw.nl/api/attempts/{self.attempt_id}/solutions", headers=headers, json=data)
+        r = requests.post(f"{self.baseURL}api/attempts/{self.attempt_id}/solutions", headers=headers, json=data)
 
         assert r.status_code == 200, print(r.content)
 
@@ -129,9 +131,16 @@ class MapfwBenchmarker:
             self.attempt_id = r.json()["attempt"]
 
             if "timeout" in r.json():
-                self.timeout = r.json()["timeout"]
+                timeout = r.json()["timeout"]
+                if self.user_timeout:
+                    self.timeout = min(self.user_timeout, timeout)
+                else:
+                    self.timeout = r.json()["timeout"]
             else:
-                self.timeout = 0
+                if self.user_timeout:
+                    self.timeout = self.user_timeout
+                else:
+                    self.timeout = 0
 
             self.status = {"state": "RUNNING", "data": {"problem_states": [0 for _ in self.problems]}}
 
@@ -154,9 +163,9 @@ class MapfwBenchmarker:
             "debug": self.debug
         }
 
-        r = requests.post(f"https://mapfw.nl/api/benchmarks/{self.problem_id}/problems", headers=headers, json=data)
-        # r = requests.post(f"http://127.0.0.1:5000/api/benchmarks/{self.problem_id}/problems", headers=headers,
-        #                   json=data)
+        # r = requests.post(f"https://mapfw.nl/api/benchmarks/{self.problem_id}/problems", headers=headers, json=data)
+        r = requests.post(f"{self.baseURL}api/benchmarks/{self.problem_id}/problems", headers=headers,
+                          json=data)
 
         assert r.status_code == 200, print(r.content)
 
@@ -173,7 +182,7 @@ class MapfwBenchmarker:
                 if self.user_timeout>timeout:
                     warnings.warn(f"The benchmark recommended timeout is {timeout}ms,"
                                   f" your timeout is {self.user_timeout}ms."
-                                  f" your timeout will be overwritten by the benchmark recommended timeout.")
+                                  f" Your timeout will be overwritten by the benchmark recommended timeout.")
                 self.timeout = min(self.user_timeout,timeout)
             else:
                 self.timeout = timeout
